@@ -1,0 +1,73 @@
+{
+  "scanId": "scan_20240101_120000",
+  "dataSourceName": "postgres",
+  "scanTimestamp": "2024-01-01T12:00:00Z",
+  "tables": [
+    {
+      "tableName": "users",
+      "schemaName": "public",
+      "databaseName": "mydb",
+      "rowCount": 1000
+    },
+    {
+      "tableName": "orders",
+      "schemaName": "public",
+      "databaseName": "mydb",
+      "rowCount": 5000
+    }
+  ],
+  "checks": [
+    {
+      "name": "users_id_not_null",
+      "type": "missing_count",
+      "definition": "SELECT COUNT(*) FROM users WHERE id IS NULL",
+      "outcome": "pass",
+      "table": "users",
+      "schema": "public",
+      "column": "id",
+      "metrics": [
+        {
+          "id": "row_count",
+          "value": 1000
+        },
+        {
+          "id": "missing_count",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "name": "users_email_unique",
+      "type": "duplicate_count",
+      "definition": "SELECT COUNT(*) FROM (SELECT email, COUNT(*) FROM users GROUP BY email HAVING COUNT(*) > 1)",
+      "outcome": "fail",
+      "table": "users",
+      "schema": "public",
+      "column": "email",
+      "metrics": [
+        {
+          "id": "row_count",
+          "value": 1000
+        },
+        {
+          "id": "unexpected_count",
+          "value": 5
+        }
+      ]
+    },
+    {
+      "name": "orders_row_count",
+      "type": "row_count",
+      "definition": "SELECT COUNT(*) FROM orders",
+      "outcome": "pass",
+      "table": "orders",
+      "schema": "public",
+      "metrics": [
+        {
+          "id": "row_count",
+          "value": 5000
+        }
+      ]
+    }
+  ]
+}
